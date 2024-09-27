@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consumo de API - Autos</title>
+</head>
+<body>
+    <h1>Consumo de API de Autos</h1>
+
+    <script>
+        const urlBase="http://localhost:8080/api/v1/auto";
+        function getAutoById(id) {
+            fetch(`${urlbase}/${id}`)
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(error => console.error('Error:', error));
+        }
+
+        function getAutoList() {
+            fetch(urlbase)
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(error => console.error('Error:', error));
+        }
+
+        function createAuto(auto) {
+            fetch(urlbase, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(auto)
+            })
+            .then(response => response.json())
+            .then(data => console.log('Auto creado:', data))
+            .catch(error => console.error('Error:', error));
+        }
+
+        function updateAuto(id, auto) {
+            fetch(`${urlbase}/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(auto)
+            })
+            .then(response => response.json())
+            .then(data => console.log('Auto actualizado:', data))
+            .catch(error => console.error('Error:', error));
+        }
+
+        function deleteAuto(id) {
+            fetch(`${urlbase}/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.status === 204) {
+                    console.log(`Auto con ID: ${id} eliminado exitosamente`);
+                } else {
+                    console.error('Error al eliminar el auto');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+/*
+        
+        // Obtener auto con ID 1
+        getAutoById(1);
+
+        // Obtener lista de autos
+        getAutoList();
+
+        // Crear un nuevo auto
+        const newAuto = {
+            marca: "Toyota",
+            modelo: "Corolla",
+            año: 2022
+        };
+        createAuto(newAuto);
+
+        // Actualizar auto con ID 1
+        const updatedAuto = {
+            marca: "Honda",
+            modelo: "Civic",
+            año: 2023
+        };
+        updateAuto(1, updatedAuto);
+
+        // Eliminar auto con ID 1
+        deleteAuto(1);
+*/
+    </script>
+</body>
+</html>
