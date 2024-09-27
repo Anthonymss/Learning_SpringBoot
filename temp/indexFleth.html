@@ -7,24 +7,95 @@
 </head>
 <body>
     <h1>Consumo de API de Autos</h1>
+    <select name="Seleccione" id="select">
+        <option value="">Seleccione</option>
+        <option value="listar">Listar</option>
+        <option value="Buscar por id">buscar por el id</option>
+        <option value="Agregar">agregar</option>
+        <option value="Actualizar">actualizar</option>
+        <option value="eliminar">eliminar</option>
+    </select>
+    
+    <div class="contenedor" id="contenedor"></div>
 
     <script>
-        const urlBase="http://localhost:8080/api/v1/auto";
-        function getAutoById(id) {
+        const urlbase = "http://localhost:8080/api/v1/auto";
+        const option = document.getElementById("select");
+        const contenedor = document.getElementById("contenedor");
+
+        option.addEventListener("change", () => {
+            const optionSeleccionada = option.value;
+            contenedor.innerHTML = "";
+            switch (optionSeleccionada) {
+                case "listar":
+                    listarAutos();
+                    break;
+                case "Buscar por id":
+                    contenedor.innerHTML = "<input type='number' id='id' placeholder='ID'><button onclick='buscarPorId(document.getElementById(\"id\").value)'>Buscar</button>";
+                    break;
+                case "Agregar":
+                    contenedor.innerHTML = `<input type='text' id='marca' placeholder='Marca'>
+                                            <input type='text' id='modelo' placeholder='Modelo'>
+                                            <input type='number' id='anio' placeholder='Año'>
+                                            <input type='number' id='precio' placeholder='Precio'>
+                                            <button onclick='crearAuto()'>Agregar</button>`;
+                    break;
+                case "Actualizar":
+                    contenedor.innerHTML = `<input type='number' id='updateId' placeholder='ID'>
+                                            <input type='text' id='updateMarca' placeholder='Marca'>
+                                            <input type='text' id='updateModelo' placeholder='Modelo'>
+                                            <input type='number' id='updateAnio' placeholder='Año'>
+                                            <input type='number' id='updatePrecio' placeholder='Precio'>
+                                            <button onclick='actualizar(document.getElementById("updateId").value)'>Actualizar</button>`;
+                    break;
+                case "eliminar":
+                    contenedor.innerHTML = "<input type='number' id='deleteId' placeholder='ID'><button onclick='deleteAuto(document.getElementById(\"deleteId\").value)'>Eliminar</button>";
+                    break;
+                default:
+                    contenedor.innerHTML = "<p>Seleccione una opción.</p>";
+            }
+        });
+
+        const listarAutos=()=> {
+            fetch(urlbase)
+                .then(response=>response.json())
+                .then(data=>{
+                    const table = document.createElement("table");
+                    table.innerHTML = "<tr><th>ID</th><th>Marca</th><th>Modelo</th><th>Año</th><th>Precio</th></tr>";
+                    data.forEach(auto => {
+                        const fila = document.createElement("tr");
+                        fila.innerHTML = `<td>${auto.id}</td><td>${auto.marca}</td><td>${auto.modelo}</td><td>${auto.anio}</td><td>${auto.precio}</td>`;
+                        table.appendChild(fila);
+                    });
+                    contenedor.appendChild(table);
+                })
+                .catch(error => {
+                    console.log("error :v ...");
+                });
+        }
+
+        const buscarPorId=(id)=>{
             fetch(`${urlbase}/${id}`)
                 .then(response => response.json())
-                .then(data => console.log(data))
-                .catch(error => console.error('Error:', error));
+                .then(data=>{
+                    contenedor.innerHTML = `<p>ID: ${data.id}</p>
+                                           <p>Marca: ${data.marca}</p>
+                                           <p>Modelo: ${data.modelo}</p>
+                                           <p>Año: ${data.anio}</p>
+                                           <p>Precio: ${data.precio}</p>`;
+                })
+                .catch(error => {
+                    contenedor.innerHTML = "<p>no se encontro :(</p>";
+                });
         }
 
-        function getAutoList() {
-            fetch(urlbase)
-                .then(response => response.json())
-                .then(data => console.log(data))
-                .catch(error => console.error('Error:', error));
-        }
-
-        function createAuto(auto) {
+        const crearAuto=()=>{
+            const auto = {
+                marca: document.getElementById("marca").value,
+                modelo: document.getElementById("modelo").value,
+                anio: document.getElementById("anio").value,
+                precio: document.getElementById("precio").value
+            };
             fetch(urlbase, {
                 method: 'POST',
                 headers: {
@@ -33,11 +104,18 @@
                 body: JSON.stringify(auto)
             })
             .then(response => response.json())
-            .then(data => console.log('Auto creado:', data))
-            .catch(error => console.error('Error:', error));
+            .then(data => {
+                contenedor.innerHTML = "<p>Auto acreado</p>";
+            })
         }
 
-        function updateAuto(id, auto) {
+        const actualizar=(id)=>{
+            const auto = {
+                marca: document.getElementById("updateMarca").value,
+                modelo: document.getElementById("updateModelo").value,
+                anio: document.getElementById("updateAnio").value,
+                precio: document.getElementById("updatePrecio").value
+            };
             fetch(`${urlbase}/${id}`, {
                 method: 'PUT',
                 headers: {
@@ -46,51 +124,26 @@
                 body: JSON.stringify(auto)
             })
             .then(response => response.json())
-            .then(data => console.log('Auto actualizado:', data))
-            .catch(error => console.error('Error:', error));
+            .then(data => {
+                contenedor.innerHTML = "<p>Auto actualizado</p>";
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                contenedor.innerHTML = "<p>Error al actualizar xd</p>";
+            });
         }
 
-        function deleteAuto(id) {
+        const deleteAuto=(id)=>{
             fetch(`${urlbase}/${id}`, {
                 method: 'DELETE'
             })
             .then(response => {
-                if (response.status === 204) {
-                    console.log(`Auto con ID: ${id} eliminado exitosamente`);
-                } else {
-                    console.error('Error al eliminar el auto');
-                }
+                    contenedor.innerHTML = "<p>Auto eliminado exitosamente.</p>";
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                contenedor.innerHTML = "<p>Error al eliminar xd</p>";
+            });
         }
-
-/*
-        
-        // Obtener auto con ID 1
-        getAutoById(1);
-
-        // Obtener lista de autos
-        getAutoList();
-
-        // Crear un nuevo auto
-        const newAuto = {
-            marca: "Toyota",
-            modelo: "Corolla",
-            año: 2022
-        };
-        createAuto(newAuto);
-
-        // Actualizar auto con ID 1
-        const updatedAuto = {
-            marca: "Honda",
-            modelo: "Civic",
-            año: 2023
-        };
-        updateAuto(1, updatedAuto);
-
-        // Eliminar auto con ID 1
-        deleteAuto(1);
-*/
     </script>
 </body>
 </html>
