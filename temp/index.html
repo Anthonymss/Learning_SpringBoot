@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consumo de API - Autos</title>
+</head>
+<body>
+    <h1>Consumo de API de Autos</h1>
+    <div class="contenedor" id="contenedor"></div>
+    <script>
+        function getAutoById(id) {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", `http://localhost:8080/api/v1/auto/${id}`, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    const auto = JSON.parse(xhr.responseText);
+                    console.log(auto);
+                }
+            };
+
+            xhr.send();
+        }
+
+        function getAutoList() {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "http://localhost:8080/api/v1/auto", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    const autos = JSON.parse(xhr.responseText);
+                    console.log(autos);
+                }
+            };
+
+            xhr.send();
+        }
+
+        function createAuto(auto) {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://localhost:8080/api/v1/auto", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 201) {
+                    const newAuto = JSON.parse(xhr.responseText);
+                    console.log(newAuto);
+                }
+            };
+
+            xhr.send(JSON.stringify(auto));
+        }
+
+        function updateAuto(id, auto) {
+            const xhr = new XMLHttpRequest();
+            xhr.open("PUT", `http://localhost:8080/api/v1/auto/${id}`, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    const updatedAuto = JSON.parse(xhr.responseText);
+                    console.log(updatedAuto);
+                }
+            };
+
+            xhr.send(JSON.stringify(auto));
+        }
+
+        function deleteAuto(id) {
+            const xhr = new XMLHttpRequest();
+            xhr.open("DELETE", `http://localhost:8080/api/v1/auto/${id}`, true);
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 204) {
+                    console.log(`Auto with ID: ${id} deleted successfully`);
+                }
+            };
+
+            xhr.send();
+        }
+
+  /*
+        getAutoById(1);
+
+        getAutoList();
+
+        const newAuto = {
+            marca: "Toyota",
+            modelo: "Corolla",
+            año: 2022
+        };
+        createAuto(newAuto);
+
+        const updatedAuto = {
+            marca: "Honda",
+            modelo: "Civic",
+            año: 2023
+        };
+        updateAuto(1, updatedAuto);
+
+        deleteAuto(1);
+  */
+    </script>
+</body>
+</html>
